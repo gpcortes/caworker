@@ -64,7 +64,7 @@ class Worker:
             complete.add_variable(
                 name=variables[variable]['name'], 
                 value=variables[variable]['value'],
-                type=variables[variable]['type'] if 'type' in variables[variable] else 'string'
+                type_=variables[variable]['type'] if 'type' in variables[variable] else 'string'
             )
 
         try:
