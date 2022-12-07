@@ -1,33 +1,24 @@
-﻿import os
-import platform
+﻿import platform
 import pycamunda.externaltask
+import pycamunda.processinst
 import requests.auth
 import requests.sessions
-import pycamunda.processinst
+import envconfiguration as config
 
 
 class Worker:
     def __init__(self):
-        self.ENG_REST_URL, self.TOPIC, self.WORKER_ID, self.ENG_REST_USERNAME, self.ENG_REST_PASSWORD, self.MAX_TASK_DURATION = self.__load_env()
+        self.ENG_REST_URL = config.ENG_REST_URL
+        self.HOST = platform.node()
+        self.TOPIC = config.TOPIC
+        self.WORKER_ID = self.HOST + self.TOPIC
+        self.ENG_REST_USERNAME = config.ENG_REST_USERNAME
+        self.ENG_REST_PASSWORD = config.ENG_REST_PASSWORD
+        self.MAX_TASK_DURATION = config.MAX_TASK_DURATION
         self.SESSION = self.__get_auth(
-            self.ENG_REST_USERNAME, self.ENG_REST_PASSWORD)
-
-    def __load_env(self):
-        if os.getenv('NODE_ENV') != 'production':
-            from os.path import join, abspath
-            from dotenv import load_dotenv
-            dotenv_path = join(abspath('.'), 'worker.env')
-            load_dotenv(dotenv_path)
-
-        ENG_REST_URL = os.getenv('ENG_REST_URL')
-        HOST = platform.node()
-        TOPIC = os.getenv('TOPIC')
-        WORKER_ID = HOST + TOPIC
-        ENG_REST_USERNAME = os.getenv('ENG_REST_USERNAME')
-        ENG_REST_PASSWORD = os.getenv('ENG_REST_PASSWORD')
-        MAX_TASK_DURATION = os.getenv('MAX_TASK_DURATION')
-
-        return ENG_REST_URL, TOPIC, WORKER_ID, ENG_REST_USERNAME, ENG_REST_PASSWORD, MAX_TASK_DURATION
+              self.ENG_REST_USERNAME, 
+              self.ENG_REST_PASSWORD
+            )
 
     def __get_auth(self, username, password):
         session = requests.sessions.Session()
@@ -53,7 +44,7 @@ class Worker:
             return resp
         except ValueError:
             print('Featching and locking task failed.')
-            return None
+            return tuple()
 
     def complete_task(self, task_id, variables={}):
         complete = pycamunda.externaltask.Complete(
