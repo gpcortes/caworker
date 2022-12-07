@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='caworker',
-    version='0.1.3',
+    version='0.1.4',
     description='Camunda Worker',
     url='https://github.com/gpcortes/caworker.git',
     author='Gustavo Côrtes',
